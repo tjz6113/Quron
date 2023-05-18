@@ -15,7 +15,12 @@ main_menu = {
     "en": "Main menu"
 }
 
-
+back = {
+    "uzl": "Ortga⬅️",
+    "uzk": "Ортга⬅️",
+    "ru": "Назад⬅️",
+    "en": "Go back⬅️️"
+}
 
 async def getting_list_of_surahs(lang):
     text = {
@@ -26,6 +31,7 @@ async def getting_list_of_surahs(lang):
     }
     ikb = InlineKeyboardMarkup()
     ikb.insert(InlineKeyboardButton(text=text[lang], callback_data="list-of-surahs"))
+    ikb.insert(InlineKeyboardButton(text=back[lang], callback_data='go-back'))
     ikb.insert(InlineKeyboardButton(text=main_menu[lang] + "🏠", callback_data='main-menu'))
     return ikb
 

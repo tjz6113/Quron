@@ -19,11 +19,17 @@ another = {
     "en": f"Another manzil!"
 }
 
+
+def ikb_manzil_start(lang):
+    ikb = InlineKeyboardMarkup(row_width=2)
+    ikb.insert(InlineKeyboardButton(text=main_menu[lang]+"🏠", callback_data="main-menu"))
+    return ikb
+
 def kb_endOfManzil(lang):
     ikb = InlineKeyboardMarkup(row_width=2)
     ikb.insert(InlineKeyboardButton(text=another[lang], callback_data="calling-manzil"))
     ikb.insert(InlineKeyboardButton(text=back[lang], callback_data="back-manzil"))
-    ikb.insert(InlineKeyboardButton(text=main_menu[lang], callback_data="main-menu"))
+    ikb.insert(InlineKeyboardButton(text=main_menu[lang]+"🏠", callback_data="main-menu"))
     return ikb
 
 
@@ -38,5 +44,5 @@ def kb_manzil_option_to_continue(rem_ayahs, lang):
     ikb.insert(InlineKeyboardButton(text=next_ayahs[lang], callback_data="next-ayahs-manzil"))
     ikb.insert(InlineKeyboardButton(text=another[lang], callback_data="calling-manzil"))
     ikb.insert(InlineKeyboardButton(text=back[lang], callback_data="back-manzil"))
-    ikb.insert(InlineKeyboardButton(text=main_menu[lang], callback_data="main-menu"))
+    ikb.insert(InlineKeyboardButton(text=main_menu[lang]+"🏠", callback_data="main-menu"))
     return ikb

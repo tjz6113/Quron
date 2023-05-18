@@ -29,7 +29,7 @@ async def getting_list_of_juzs(lang):
 
     ikb = InlineKeyboardMarkup()
     ikb.insert(InlineKeyboardButton(text=text[lang], callback_data="list-of-juzs"))
-    ikb.insert(InlineKeyboardButton(text=back[lang], callback_data='back-juz'))
+    ikb.insert(InlineKeyboardButton(text=main_menu[lang]+"🏠", callback_data='back-juz'))
     return ikb
 
 def kb_juz_option_to_continue(rem_ayahs, lang):
@@ -43,14 +43,14 @@ def kb_juz_option_to_continue(rem_ayahs, lang):
     ikb.insert(InlineKeyboardButton(text=next_ayahs[lang], callback_data="next-ayahs-juz"))
     ikb.insert(InlineKeyboardButton(text=another[lang], callback_data="calling-juz"))
     ikb.insert(InlineKeyboardButton(text=back[lang], callback_data="back-juz"))
-    ikb.insert(InlineKeyboardButton(text=main_menu[lang], callback_data="main-menu"))
+    ikb.insert(InlineKeyboardButton(text=main_menu[lang]+"🏠", callback_data="main-menu"))
     return ikb
 
 def kb_endOfJuz(lang):
     ikb = InlineKeyboardMarkup(row_width=2)
     ikb.insert(InlineKeyboardButton(text=another[lang], callback_data="calling-juz"))
     ikb.insert(InlineKeyboardButton(text=back[lang], callback_data="back-juz"))
-    ikb.insert(InlineKeyboardButton(text=main_menu[lang], callback_data="main-menu"))
+    ikb.insert(InlineKeyboardButton(text=main_menu[lang]+"🏠", callback_data="main-menu"))
     return ikb
 
 def kb_go_back(lang):

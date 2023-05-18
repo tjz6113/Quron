@@ -4,6 +4,9 @@ from aiogram.dispatcher import FSMContext
 from keyboards.default.options_for_Quran import options_to_read
 from keyboards.inline.kb_for_juzs import getting_list_of_juzs
 from keyboards.inline.kb_for_surahs import getting_list_of_surahs
+from keyboards.inline.kb_for_manzils import ikb_manzil_start
+from keyboards.inline.kb_for_page import ikb_page_start
+
 from states.states_for_Quran import states_for_Quran
 from states.language_state import Language
 
@@ -16,10 +19,10 @@ delete = bool
 async def quran_cmd(message: types.Message, state: FSMContext):
 
     text = {
-        'uzl': "Qur'onni uch xil uslubda o'qishingiz mumkin. Ikkalasidan birini tanglang!",
-        'uzk': "Қуръонни уч хил услубда ўқишингиз мумкин. Иккаласидан бирини тангланг!",
-        'ru': "Вы можете читать Коран тремя способами. Пожалуйста, выберите один из трех!",
-        'en': "You can read Quran in three ways. Please choose one!"
+        'uzl': "Qur'onni to'rt xil uslubda o'qishingiz mumkin. Birini tanglang!",
+        'uzk': "Қуръонни тўрт хил услубда ўқишингиз мумкин. Бирини тангланг!",
+        'ru': "Вы можете читать Коран четырьмя способами. Пожалуйста, выберите один!",
+        'en': "You can read Quran in four ways. Please choose one!"
     }
     lang = db_users.get_user_language(id=message.chat.id)[0]
     await message.answer(text[lang], reply_markup=await options_to_read(lang, message))
@@ -88,20 +91,21 @@ async def option_to_read_cmd(message: types.Message, state: FSMContext):
 
     elif text in Page[lang]:
         text = {
-            'uzl': "Varaq raqamini kiriting!",
-            'uzk': "Варақ рақамини киритинг!",
-            'ru': "Введите номер страницы!",
-            'en': "Enter the page number"
+            'uzl': "Varaq raqamini kiriting! Yoki pastdagi tugmani bosing!",
+            'uzk': "Варақ рақамини киритинг! Ёки пастдаги тугмани босинг!",
+            'ru': "Введите номер страницы!  Или нажмите кнопку ниже!",
+            'en': "Enter the page number. Or click the button below"
         }
-        await message.answer(text=text[lang])
+        await message.answer(text=text[lang],  reply_markup=ikb_page_start(lang))
         await states_for_Quran.page.set()
     elif text in manzil[lang]:
+        await message.delete()
         text = {
-            'uzl': "Manzil raqamini kiriting!",
-            'uzk': "Манзил рақамини киритинг!",
-            'ru': "Введите номер манзила!",
-            'en': "Enter the manzil number"
+            'uzl': "Manzil raqamini kiriting! Yoki pastdagi tugmani bosing!",
+            'uzk': "Манзил рақамини киритинг! Ёки пастдаги тугмани босинг!",
+            'ru': "Введите номер манзила! Или нажмите кнопку ниже!",
+            'en': "Enter the manzil number! Or click the button below"
         }
-        await message.answer(text=text[lang])
+        await message.answer(text=text[lang], reply_markup=ikb_manzil_start(lang))
         await state.set_state('manzil')
 

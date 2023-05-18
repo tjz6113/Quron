@@ -6,7 +6,7 @@ from data import config
 
 proxy_url = 'http://proxy.server:3128'
 
-bot = Bot(token=config.BOT_TOKEN, parse_mode=types.ParseMode.HTML, proxy=proxy_url,)
+bot = Bot(token=config.BOT_TOKEN, parse_mode=types.ParseMode.HTML)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 db_surah = DatabaseForSurahs(path_to_db="data/surahs_file_id.db")

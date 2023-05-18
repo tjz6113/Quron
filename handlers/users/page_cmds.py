@@ -12,18 +12,12 @@ from handlers.users.Quran import quran_cmd
 lang = ''
 
 
-
-
-
-
-
-
 async def get_data(page_num):
     arabic_arr = req.get(f"http://api.alquran.cloud/v1/page/{page_num}").json()['data']['ayahs']
     transliteration_arr = req.get(f"http://api.alquran.cloud/v1/page/{page_num}/en.transliteration").json()['data'][
         'ayahs']
     translation_uz_arr = req.get(f"http://api.alquran.cloud/v1/page/{page_num}/uz.sodik").json()['data']['ayahs']
-    translation_ru_arr = req.get(f"http://api.alquran.cloud/v1/page/{page_num}/ru.kuliev-alsaadi").json()['data']['ayahs']
+    translation_ru_arr = req.get(f"http://api.alquran.cloud/v1/page/{page_num}/ru.porokhova").json()['data']['ayahs']
     translation_en_arr = req.get(f"http://api.alquran.cloud/v1/page/{page_num}/en.asad").json()['data']['ayahs']
     return arabic_arr, transliteration_arr, translation_uz_arr, translation_ru_arr, translation_en_arr
 
@@ -65,7 +59,7 @@ async def make_message_with_audio(num, arabic_arr, transliteration_arr, translat
     if ayat_num == '1':
         text = arabicName + engName + surahNum + NumInSurah + arabicVer + lit_version + translationF
     else:
-        text = NumInSurah + arabicVer + lit_version + translationF
+        text = NumInSurah + arabicVer + lit_version + "\n" + translationF
 
     audioURl = f"https://cdn.islamic.network/quran/audio/128/ar.alafasy/{arabic_arr[num]['number']}.mp3"
     return audioURl, text, NumInSurah
@@ -93,7 +87,16 @@ async def send_ayahs_in_pages(message: types.Message, state: FSMContext, page_nu
         "ru": "Вы дошли до конца этой страницы. Выберите один ниже!",
         "en": "You've reached the end of this page. Please choose one of the options below!"
     }
-    await message.answer(text=end_page_msg[lang], reply_markup=end_page(lang))
+    end_book_msg = {
+        "uzl":"Kitob oxiriga yetdingiz! Pastdagilardan birini tanlang!",
+        "uzl":"Китоб охирига етдингиз! Пастдагилардан бирини танланг!",
+        "ru":"Вы добрались до конца книги! Выберите один ниже!",
+        "en":"You have reached the end. Please choose one of the options below!"
+    }
+    if page_num == 604:
+        await message.answer(text=end_book_msg[lang], reply_markup=end_page(lang, page_num))
+    else:
+        await message.answer(text=end_page_msg[lang], reply_markup=end_page(lang, page_num))
     await states_for_Quran.choosing_end_page.set()
 
 
@@ -126,23 +129,37 @@ async def check_number(message: types.Message, state: FSMContext):
         await send_ayahs_in_pages(message, state, page_num)
 
 
+@dp.callback_query_handler(state=states_for_Quran.page)
+async def page_callbacks(call: types.CallbackQuery, state: FSMContext):
+    if call.data == 'main-menu':
+        await call.message.delete()
+        await Language.Choosing_book.set()
+        await quran_cmd(call.message, state)
+
+
+
+
 @dp.callback_query_handler(state=states_for_Quran.choosing_end_page)
 async def callbacks_for_page(call: callback_query.CallbackQuery, state: FSMContext):
     if call.data == 'next-page':
+        await call.message.delete()
         async with state.proxy() as data:
             page_num = data['page-num']
         page_num += 1
         await send_ayahs_in_pages(call.message, state, page_num)
-    elif call.data == 'go-back':
-        await quran_cmd(call.message, state)
+    elif call.data == 'another-page':
+        await call.message.delete()
+        text = {
+            'uzl': "Varaq raqamini kiriting!",
+            'uzk': "Варақ рақамини киритинг!",
+            'ru': "Введите номер страницы!",
+            'en': "Enter the page number"
+        }
+        await call.message.answer(text=text[lang])
+        await states_for_Quran.page.set()
 
     elif call.data == "main-menu":
-        main_menu = {
-            "uzl": "Asosiy menu",
-            "uzk": "Асосий меню",
-            "ru": "Главное меню",
-            "en": "Main menu"
-        }
+        await call.message.delete()
         await Language.Choosing_book.set()
-        await call.message.answer(main_menu[lang], reply_markup=await list_of_books(lang))
+        await quran_cmd(call.message, state)
 

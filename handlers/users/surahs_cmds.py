@@ -45,6 +45,11 @@ async def sending_list_of_surahs(call: types.callback_query, state: FSMContext):
         print(line4)
     elif call.data == "choose-Quran-reading-options":
         await quran_cmd(call.message, state)
+    elif call.data == "main-menu":
+        await Language.Choosing_book.set()
+        await quran_cmd(call.message, state)
+
+
 
 
 @dp.callback_query_handler(state=states_for_Quran.ayah)
@@ -52,11 +57,14 @@ async def sending_list_of_surahs(call: types.callback_query, state: FSMContext):
 async def send_10_ayahs(call: types.callback_query.CallbackQuery, state: FSMContext):
     lang = db_users.get_user_language(id=call.message.chat.id)[0]
     if call.data == "next-10-ayahs":
+        await call.message.delete()
 
         async with state.proxy() as data:
             data['one-ayah'] = False
         await sending_ayahs(call.message, state)
     elif call.data == "another-surah":
+        await call.message.delete()
+
         async with state.proxy() as data:
             data['latest-ayah'] = 1
         dig_n_surah = {
@@ -69,16 +77,19 @@ async def send_10_ayahs(call: types.callback_query.CallbackQuery, state: FSMCont
         await call.message.answer(text=dig_n_surah[lang])
 
     elif call.data == "main-menu":
+        await call.message.delete()
         await Language.Choosing_book.set()
         await quran_cmd(call.message, state)
     elif call.data == "next-ayah":
-
+        await call.message.delete()
         async with state.proxy() as data:
             data['one-ayah'] = True
         await sending_ayahs(call.message, state)
     elif call.data == "full-surah-audio":
+        await call.message.delete()
         await sendAudio_ar(call.message, state)
     elif call.data == 'full-surah-audio-uz':
+        await call.message.delete()
         await sendAudio_uz(call.message, state)
 
 def making_msg(ayah, arabic, transliteration, translation, lang, translation_ru, translation_en):
@@ -119,7 +130,7 @@ def get_json(surahNum):
     translation = req.get(
         f"http://api.alquran.cloud/v1/surah/{surahNum}/editions/uz.sodik").json()['data'][0]['ayahs']
 
-    translation_ru = req.get(f"http://api.alquran.cloud/v1//surah/{surahNum}/editions/ru.kuliev-alsaadi").json()['data'][0]['ayahs']
+    translation_ru = req.get(f"http://api.alquran.cloud/v1//surah/{surahNum}/editions/ru.porokhova").json()['data'][0]['ayahs']
     translation_en = req.get(f"http://api.alquran.cloud/v1//surah/{surahNum}/editions/en.ahmedali").json()['data'][0][
         'ayahs']
 
